@@ -1,0 +1,51 @@
+
+*******************************【MysqlEncap】************************************
+
+简介：该类 MysqlEncap 封装了Mysql数据库操作的接口api, 提供了更加方便的数据库操作
+使用：
+	1. MysqlEncap *conn = new MysqlEncap;//新建一个类对象指针
+	2. conn->Connect("ip","username", "password");//建立连接
+
+	3. sql 查询语句：[select]
+	   	conn->ExecuteQuery("select * from testdb.student;");
+	4. sql 修改语句：[use, delete, insert, update...]
+		conn->Execute("update testdb.student set name = 'chengshuguang' where name = 'testapi';");
+
+	5. 事务Transaction:(EndTransaction()会根据执行结果自动选择commit或者rollback)
+		* conn->StartTransaction();
+		* ...
+		* do something...
+		* ....
+		* conn->EndTransaction();//修改为：当返回值0的时候，是ROLLBACK，1--COMMIT
+
+	6. 查询结果的输出:
+		* while(conn->FetchRow()){
+			printf("%s,%s\n",conn->GetField("sid"),conn->GetField("name"));
+		  }
+		  其中conn->GetField("sid")还可以是conn->GetField(0),用结果的顺序号表示
+		* while(char **r = conn->FetchRow()){
+			printf("%s,%s\n", r[0], r[1]);
+		  }
+	7. 关闭一个连接
+		conn->CloseConnect();
+
+********************************【ConnPool】*************************************
+简介： 该类实现了一个连接池，其中利用到封装好的mutex[lock.h] 和 封装的MysqlEncap类
+使用：
+	1. ConnPool* conn_pool = ConnPool::GetInstance();//得到一个连接池对象，singleton 模式
+	2. MysqlEncap *sql_conn = conn_pool->GetOneConn();//从连接池中获得一条连接
+	3. conn_pool->ReleaseOneConn(sql_conn);//归还连接到连接池中
+	4. conn_pool->ShowStatus();//查看目前连接池的状态信息
+
+初始化连接池的信息：【conn_pool.h】文件中配置
+		#define HOST 		"localhost"
+		#define USERNAME 	"root"
+		#define PASSWORD 	"110315"
+
+		#define MAX_CONNPOOL_SIZE 	3
+		#define INIT_CONNPOOL_SIZE 	1
+//test
+g++ -g -Wall -lmysqlclient -lpthread mysql_encap.cpp mysql_encap.h conn_pool.cpp conn_pool.h testConnPool.cpp -o testConnPool
+
+
+

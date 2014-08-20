@@ -1,0 +1,60 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>test long poll</title>
+</head>
+<body>
+<div id="tip">...</div>
+<div id="test">this is a test div</div>
+<BUTTON id ="btn" onClick = "pub()" title = "skip this song!">pub</BUTTON>
+<script type="text/javascript" src="jquery-1.8.0.js"></script>
+<script type="text/javascript">
+
+function pub() {
+	$.get("pub");
+}
+
+$(function (){
+ function log(resp){
+  $("#tip").text(resp.t_name[1].name + " | " + resp.t_year[1].year);
+ }
+ 
+ //log("loading...");
+ 
+
+<!--   $.ajaxSetup({ cache: false });-->
+  
+  
+  function initGet() {
+  	$.ajax({
+	  url: "sub",
+	  //data: {name: "cheng", who: "guang"},
+	  success: function (data) {
+	  	//log(data);
+	  	log(data);
+	  	//initGet();
+	  },
+	  dataType: "json"
+	});
+  }
+
+<!-- function initGet(){-->
+<!--  $.get("count.txt")-->
+<!--    .success(function(resp){-->
+<!--    log("success");-->
+<!--   log(resp);-->
+<!--  }).error(function(){-->
+<!--   log("ERROR!");-->
+<!--  })-->
+<!--  .done(function(resp){-->
+<!--  log("done");-->
+<!--   log(resp);-->
+<!--   initGet();-->
+<!--  })-->
+<!-- }-->
+ 
+ initGet();
+});
+</script>
+</body>
+</html>
